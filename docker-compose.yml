@@ -1,0 +1,14 @@
+version: '2'
+services:
+  deluge:
+    build: .
+    ports:
+    - "8112:8112"
+    devices:
+    - "/dev/net/tun:/dev/net/tun"
+    cap_add:
+    - NET_ADMIN
+    env_file: env.list
+    stdin_open: true
+    tty: true
+    network_mode: "bridge"

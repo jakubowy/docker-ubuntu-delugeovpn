@@ -4,18 +4,18 @@ docker build -t delugeovpn .
 devel run command:
 docker run --rm -it --device=/dev/net/tun --cap-add=NET_ADMIN -p 8112:8112 --name disposable_openvpn delugeovpn:latest bash
 
+devel docker-compose run command:
+docker-compose run --service-ports --rm deluge bash
+^ --service-ports exposes ports on host
 
 final build command:
 not yet
 
 BEFORE BUILDING:
-- change pia credentials in  "files/credentials.txt"
-- change deluge console user/password in "files/startservices.sh"
-- change pia and deluge console user creds in "files/updatedeluge.sh"
 
 TO DO:
 - cron port checking
 - keep container running in background
 - map directories local:/home/deluged/Downloads local:/home/deluged/.config/deluge
-- smart ip rules instead hardcoded ip's ...
+- smart ip rules instead hardcoded ip's DONE
 - cleanup total mess in packages

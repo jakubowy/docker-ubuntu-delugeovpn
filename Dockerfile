@@ -38,7 +38,7 @@ RUN chmod 0644 /etc/cron.d/cronjob
 RUN crontab /etc/cron.d/cronjob
 RUN cron
 
-EXPOSE 8112
+#EXPOSE 8112
 #USER appuser
 CMD ["/dockerfiles/bootstrap.sh"]
 	
