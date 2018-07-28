@@ -16,24 +16,30 @@ RUN apt-get update &&\
 	apt-get update &&\
 	apt-get install -y wget openvpn unzip deluged deluge-web deluge-console iptables &&\
 	apt-get purge -y software-properties-common &&\
-	 rm -rf /var/lib/apt/lists/*  && \
+	mkdir /dockerfiles && cd /dockerfiles &&\
 	wget https://www.privateinternetaccess.com/openvpn/openvpn.zip &&\
 	unzip -o openvpn.zip  Sweden.ovpn crl.rsa.2048.pem ca.rsa.2048.crt &&\
-	sed -i 's/auth-user-pass/auth-user-pass credentials.txt/g' Sweden.ovpn &&\
+	sed -i 's|auth-user-pass|auth-user-pass /dockerfiles/credentials.txt|g' Sweden.ovpn &&\
 	rm -rf /var/lib/apt/lists/*
 
 #RUN groupadd -g 1000 appuser
+# DELUGE PASSWORDLESS
 ADD files/deluge-all.js /usr/lib/python2.7/dist-packages/deluge/ui/web/js/deluge-all.js
 ADD files/auth.py /usr/lib/python2.7/dist-packages/deluge/ui/web/auth.py   
-RUN useradd -m -u 1000 deluged
-RUN adduser deluged root
-ADD files/credentials.txt /credentials.txt
-ADD files/startservices.sh /startservices.sh
-ADD files/updatedeluge.sh /updatedeluge.sh
-RUN chmod 0440 credentials.txt && chmod 0770 /startservices.sh /updatedeluge.sh
+
+# RUNSCRIPTS
+ADD files/bootstrap.sh /dockerfiles/bootstrap.sh
+ADD files/updatedeluge.sh /dockerfiles/updatedeluge.sh
+RUN chmod 0770 /dockerfiles/bootstrap.sh /dockerfiles/updatedeluge.sh
+
+# CRON FOR PIA
+ADD files/crontab /etc/cron.d/cronjob
+RUN chmod 0644 /etc/cron.d/cronjob
+RUN crontab /etc/cron.d/cronjob
+RUN cron
 
 EXPOSE 8112
 #USER appuser
-CMD ["/startservices.sh"]
+CMD ["/dockerfiles/bootstrap.sh"]
 	
 
