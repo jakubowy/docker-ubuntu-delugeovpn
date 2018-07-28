@@ -4,11 +4,14 @@ echo "Creating deluged user with uid $DELUGED_UID"
 useradd -m -u $DELUGED_UID deluged
 adduser deluged root
 
+echo "Owning homedir"
+chown -R deluged:deluged /home/deluged
+
 echo "Creating PIA ovpn credentials user: $PIA_USER password: $PIA_PASS"
 echo -e "$PIA_USER\n$PIA_PASS" > credentials.txt && chmod 0400 credentials.txt
 
 echo "Starting OVPN"
-openvpn --config Sweden.ovpn &
+openvpn --config Sweden.ovpn --log-append /var/log/openvpn.log &
 echo "Updating resolv.conf"
 echo -e "nameserver 209.222.18.222\nnameserver 209.222.18.218" > /etc/resolv.conf
 
@@ -21,8 +24,8 @@ su deluged -c "killall deluged"
 echo "Creating deluged console user $DELUGE_CONSOLE_USER $DELUGE_CONSOLE_PASS"
 su deluged -c 'echo "$DELUGE_CONSOLE_USER:$DELUGE_CONSOLE_PASS:10" >> /home/deluged/.config/deluge/auth'
 
-echo "Staring deluged daemon"
-su deluged -c /usr/bin/deluged
+#echo "Staring deluged daemon"
+#su deluged -c "/usr/bin/deluged -l /home/deluged/deluged.log"
 
 echo "Starting deluge-web daemon"
 su deluged -c "/usr/bin/deluge-web -f --ssl"
@@ -45,8 +48,16 @@ ip route add table 128 to $ETH0SUBNET/24 dev eth0
 ip route add table 128 default via $ETH0GATEWAY
 
 
-echo "Setting up deluge iface and ports"
-/dockerfiles/updatedeluge.sh
+#echo "Setting up deluge iface and ports"
+#/dockerfiles/updatedeluge.sh
+
+echo "Exporting ENVs for cron"
+echo -e "export PIA_USER=$PIA_USER\nexport PIA_PASS=$PIA_PASS\nexport DELUGE_CONSOLE_USER=$DELUGE_CONSOLE_USER\nexport DELUGE_CONSOLE_PASS=$DELUGE_CONSOLE_PASS\n" >> $HOME/.profile
 
 echo "Starting cron"
 cron
+
+
+echo "Staring deluged daemon"
+su deluged -c "/usr/bin/deluged -d -l /home/deluged/deluged.log"
+

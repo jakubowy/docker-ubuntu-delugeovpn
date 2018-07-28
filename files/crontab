@@ -1,2 +1,2 @@
-* * * * * echo "`date`" >> /var/log/cron.log 2>&1
+1-59/2 * * * * . $HOME/.profile; /dockerfiles/updatedeluge.sh 2>&1 >> /var/log/cron.log 2>&1
 

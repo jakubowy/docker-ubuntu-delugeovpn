@@ -9,6 +9,9 @@ services:
     cap_add:
     - NET_ADMIN
     env_file: env.list
+    volumes:
+    - "/var/lib/deluge:/home/deluged/.config/deluge"
+    - "/tmp:/home/deluged/Downloads"
     stdin_open: true
     tty: true
     network_mode: "bridge"

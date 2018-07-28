@@ -9,13 +9,13 @@ docker-compose run --service-ports --rm deluge bash
 ^ --service-ports exposes ports on host
 
 final build command:
-not yet
+docker-compose up -d
 
 BEFORE BUILDING:
 
 TO DO:
-- cron port checking
-- keep container running in background
-- map directories local:/home/deluged/Downloads local:/home/deluged/.config/deluge
+- cron port checking DONE
+- keep container running in background DONE
+- map directories local:/home/deluged/Downloads local:/home/deluged/.config/deluge DONE
 - smart ip rules instead hardcoded ip's DONE
 - cleanup total mess in packages
